@@ -62,7 +62,7 @@ const Index = () => {
   const [articles, setArticles] = useState<Article[]>(mockArticles);
   const [filteredArticles, setFilteredArticles] = useState<Article[]>(mockArticles);
   const [selectedMainTags, setSelectedMainTags] = useState<string[]>([]);
-  const [selectedSubTag, setSelectedSubTag] = useState<string>('');
+  const [selectedSubTag, setSelectedSubTag] = useState<string>('all');
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
 
   // Get all unique main tags
@@ -87,7 +87,7 @@ const Index = () => {
       );
     }
 
-    if (selectedSubTag) {
+    if (selectedSubTag && selectedSubTag !== 'all') {
       filtered = filtered.filter(article => 
         article.subTags.includes(selectedSubTag)
       );
@@ -102,7 +102,7 @@ const Index = () => {
         ? prev.filter(t => t !== tag)
         : [...prev, tag]
     );
-    setSelectedSubTag(''); // Reset subtag when main tags change
+    setSelectedSubTag('all'); // Reset subtag when main tags change
   };
 
   const handleSearch = () => {
@@ -179,7 +179,7 @@ const Index = () => {
                   <SelectValue placeholder="Select subtag" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Subtags</SelectItem>
+                  <SelectItem value="all">All Subtags</SelectItem>
                   {availableSubTags.map(subTag => (
                     <SelectItem key={subTag} value={subTag}>
                       {subTag}
