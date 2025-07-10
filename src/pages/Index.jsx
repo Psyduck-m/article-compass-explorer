@@ -7,23 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ExternalLink, Search, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
-// Article interface
-interface Article {
-  id: string;
-  title: string;
-  summary: string;
-  shortSummary: string;
-  mainTags: string[];
-  subTags: string[];
-  link: string;
-}
-
 const Index = () => {
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
-  const [selectedMainTags, setSelectedMainTags] = useState<string[]>([]);
-  const [selectedSubTag, setSelectedSubTag] = useState<string>('all');
-  const [expandedCard, setExpandedCard] = useState<string | null>(null);
+  const [articles, setArticles] = useState([]);
+  const [filteredArticles, setFilteredArticles] = useState([]);
+  const [selectedMainTags, setSelectedMainTags] = useState([]);
+  const [selectedSubTag, setSelectedSubTag] = useState('all');
+  const [expandedCard, setExpandedCard] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Load articles from JSON files
@@ -97,7 +86,7 @@ const Index = () => {
     setFilteredArticles(filtered);
   }, [selectedMainTags, selectedSubTag, articles]);
 
-  const handleMainTagToggle = (tag: string) => {
+  const handleMainTagToggle = (tag) => {
     setSelectedMainTags(prev => 
       prev.includes(tag) 
         ? prev.filter(t => t !== tag)
@@ -113,11 +102,11 @@ const Index = () => {
     });
   };
 
-  const handleCardClick = (articleId: string) => {
+  const handleCardClick = (articleId) => {
     setExpandedCard(expandedCard === articleId ? null : articleId);
   };
 
-  const handleExternalLink = (link: string, e: React.MouseEvent) => {
+  const handleExternalLink = (link, e) => {
     e.stopPropagation();
     window.open(link, '_blank');
   };
