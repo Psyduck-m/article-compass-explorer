@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ExternalLink, Search, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
-// Mock data structure for articles
+// Article interface
 interface Article {
   id: string;
   title: string;
@@ -18,52 +18,53 @@ interface Article {
   link: string;
 }
 
-// Mock articles data - in a real app this would come from data_new/articles
-const mockArticles: Article[] = [
-  {
-    id: '1',
-    title: 'Revolutionary AI Technology Transforms Healthcare',
-    summary: 'A comprehensive look at how artificial intelligence is revolutionizing the healthcare industry, from diagnostic tools to personalized treatment plans. Medical professionals are increasingly relying on AI-powered systems to improve patient outcomes and streamline operations.',
-    shortSummary: 'AI technology is transforming healthcare with diagnostic tools and personalized treatments.',
-    mainTags: ['Technology', 'Healthcare'],
-    subTags: ['AI', 'Innovation', 'Medical'],
-    link: 'https://example.com/ai-healthcare'
-  },
-  {
-    id: '2',
-    title: 'Global Climate Change Summit Reaches Historic Agreement',
-    summary: 'World leaders gather to discuss unprecedented climate action plans, setting ambitious targets for carbon reduction and renewable energy adoption. The summit marks a turning point in global environmental policy with concrete commitments from major economies.',
-    shortSummary: 'World leaders reach historic climate agreement with ambitious carbon reduction targets.',
-    mainTags: ['Environment', 'Politics'],
-    subTags: ['Climate Change', 'Sustainability', 'Policy'],
-    link: 'https://example.com/climate-summit'
-  },
-  {
-    id: '3',
-    title: 'Stock Market Hits New All-Time High',
-    summary: 'Financial markets continue their upward trajectory as investor confidence grows amid positive economic indicators. Technology stocks lead the surge with strong quarterly earnings reports from major corporations.',
-    shortSummary: 'Stock market reaches new heights driven by technology sector gains.',
-    mainTags: ['Finance', 'Technology'],
-    subTags: ['Stock Market', 'Investment', 'Economy'],
-    link: 'https://example.com/stock-market'
-  },
-  {
-    id: '4',
-    title: 'Olympic Games Set New Attendance Records',
-    summary: 'This year\'s Olympic Games have broken multiple attendance records with millions of spectators worldwide. Athletes from over 200 countries compete in various disciplines, showcasing human excellence and international cooperation.',
-    shortSummary: 'Olympic Games break attendance records with global participation.',
-    mainTags: ['Sports', 'International'],
-    subTags: ['Olympics', 'Athletics', 'Competition'],
-    link: 'https://example.com/olympics'
-  }
-];
-
 const Index = () => {
-  const [articles, setArticles] = useState<Article[]>(mockArticles);
-  const [filteredArticles, setFilteredArticles] = useState<Article[]>(mockArticles);
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
   const [selectedMainTags, setSelectedMainTags] = useState<string[]>([]);
   const [selectedSubTag, setSelectedSubTag] = useState<string>('all');
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Load articles from JSON files
+  useEffect(() => {
+    const loadArticles = async () => {
+      try {
+        setLoading(true);
+        // For demo purposes, we'll try to load a few common article files
+        // In a real implementation, you might have an index file listing all articles
+        const articleFiles = ['1.json', '2.json', '3.json', '4.json']; // Add more as needed
+        const loadedArticles = [];
+
+        for (const filename of articleFiles) {
+          try {
+            const response = await fetch(`/data_new/articles/${filename}`);
+            if (response.ok) {
+              const articleData = await response.json();
+              loadedArticles.push(articleData);
+            }
+          } catch (error) {
+            console.log(`Could not load article ${filename}:`, error);
+          }
+        }
+
+        setArticles(loadedArticles);
+        setFilteredArticles(loadedArticles);
+        console.log('Loaded articles:', loadedArticles);
+      } catch (error) {
+        console.error('Error loading articles:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load articles",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadArticles();
+  }, []);
 
   // Get all unique main tags
   const allMainTags = Array.from(new Set(articles.flatMap(article => article.mainTags)));
@@ -120,6 +121,17 @@ const Index = () => {
     e.stopPropagation();
     window.open(link, '_blank');
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading articles...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -260,9 +272,9 @@ const Index = () => {
             ))}
           </div>
           
-          {filteredArticles.length === 0 && (
+          {filteredArticles.length === 0 && !loading && (
             <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">No articles found matching your criteria.</p>
+              <p className="text-gray-500 text-lg">No articles found. Make sure your JSON files are in the data_new/articles directory.</p>
             </div>
           )}
         </div>
