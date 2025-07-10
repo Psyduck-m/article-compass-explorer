@@ -7,8 +7,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ExternalLink, Search, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
+// Mock data structure for articles
+interface Article {
+  id: string;
+  title: string;
+  summary: string;
+  shortSummary: string;
+  mainTags: string[];
+  subTags: string[];
+  link: string;
+}
+
 // Mock articles data - in a real app this would come from data_new/articles
-const mockArticles = [
+const mockArticles: Article[] = [
   {
     id: '1',
     title: 'Revolutionary AI Technology Transforms Healthcare',
@@ -48,11 +59,11 @@ const mockArticles = [
 ];
 
 const Index = () => {
-  const [articles, setArticles] = useState(mockArticles);
-  const [filteredArticles, setFilteredArticles] = useState(mockArticles);
-  const [selectedMainTags, setSelectedMainTags] = useState([]);
-  const [selectedSubTag, setSelectedSubTag] = useState('all');
-  const [expandedCard, setExpandedCard] = useState(null);
+  const [articles, setArticles] = useState<Article[]>(mockArticles);
+  const [filteredArticles, setFilteredArticles] = useState<Article[]>(mockArticles);
+  const [selectedMainTags, setSelectedMainTags] = useState<string[]>([]);
+  const [selectedSubTag, setSelectedSubTag] = useState<string>('all');
+  const [expandedCard, setExpandedCard] = useState<string | null>(null);
 
   // Get all unique main tags
   const allMainTags = Array.from(new Set(articles.flatMap(article => article.mainTags)));
@@ -85,7 +96,7 @@ const Index = () => {
     setFilteredArticles(filtered);
   }, [selectedMainTags, selectedSubTag, articles]);
 
-  const handleMainTagToggle = (tag) => {
+  const handleMainTagToggle = (tag: string) => {
     setSelectedMainTags(prev => 
       prev.includes(tag) 
         ? prev.filter(t => t !== tag)
@@ -101,11 +112,11 @@ const Index = () => {
     });
   };
 
-  const handleCardClick = (articleId) => {
+  const handleCardClick = (articleId: string) => {
     setExpandedCard(expandedCard === articleId ? null : articleId);
   };
 
-  const handleExternalLink = (link, e) => {
+  const handleExternalLink = (link: string, e: React.MouseEvent) => {
     e.stopPropagation();
     window.open(link, '_blank');
   };
