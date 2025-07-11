@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ExternalLink, Search, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -26,6 +26,8 @@ const Index = () => {
   const [expandedCard, setExpandedCard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [articleFilenames, setArticleFilenames] = useState([]);
+  const [selectedArticle, setSelectedArticle] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Get all main tags from predefined tags
   const allMainTags = Object.keys(PREDEFINED_TAGS);
@@ -127,6 +129,18 @@ const Index = () => {
     }
   }, [selectedMainTags, selectedSubTag]);
 
+  // Handle article click to open modal
+  const handleArticleClick = (article) => {
+    setSelectedArticle(article);
+    setIsModalOpen(true);
+  };
+
+  // Handle modal close
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedArticle(null);
+  };
+
   const handleMainTagToggle = (tag) => {
     setSelectedMainTags(prev => 
       prev.includes(tag) 
@@ -145,10 +159,6 @@ const Index = () => {
       title: "Search Applied",
       description: `Found ${filenames.length} articles`,
     });
-  };
-
-  const handleCardClick = (articleId) => {
-    setExpandedCard(expandedCard === articleId ? null : articleId);
   };
 
   const handleExternalLink = (link, e) => {
@@ -262,20 +272,16 @@ const Index = () => {
             {filteredArticles.map(article => (
               <Card 
                 key={article.id}
-                className={`cursor-pointer transition-all duration-300 hover:shadow-lg border-2 ${
-                  expandedCard === article.id 
-                    ? 'border-red-600 shadow-lg' 
-                    : 'border-gray-200 hover:border-red-400'
-                }`}
-                onClick={() => handleCardClick(article.id)}
+                className="cursor-pointer transition-all duration-300 hover:shadow-lg border-2 border-gray-200 hover:border-red-400"
+                onClick={() => handleArticleClick(article)}
               >
                 <CardContent className="p-6">
                   <h4 className="text-lg font-semibold text-black mb-3 line-clamp-2">
                     {article.title}
                   </h4>
                   
-                  <p className="text-gray-700 mb-4 text-sm leading-relaxed">
-                    {expandedCard === article.id ? article.summary : article.shortSummary}
+                  <p className="text-gray-700 mb-4 text-sm leading-relaxed line-clamp-3">
+                    {article.shortSummary}
                   </p>
                   
                   <div className="flex flex-wrap gap-2 mb-4">
@@ -284,23 +290,7 @@ const Index = () => {
                         {tag}
                       </Badge>
                     ))}
-                    {expandedCard === article.id && article.subTags && article.subTags.map(subTag => (
-                      <Badge key={subTag} variant="outline" className="border-gray-400 text-gray-700 text-xs">
-                        {subTag}
-                      </Badge>
-                    ))}
                   </div>
-                  
-                  {expandedCard === article.id && (
-                    <Button
-                      onClick={(e) => handleExternalLink(article.link, e)}
-                      className="w-full bg-red-600 hover:bg-red-700 text-white mt-2"
-                      size="sm"
-                    >
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                      Read Full Article
-                    </Button>
-                  )}
                 </CardContent>
               </Card>
             ))}
@@ -313,6 +303,55 @@ const Index = () => {
           )}
         </div>
       </section>
+
+      {/* Article Modal */}
+      <Dialog open={isModalOpen} onOpenChange={handleModalClose}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          {selectedArticle && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-xl font-bold text-black pr-8">
+                  {selectedArticle.title}
+                </DialogTitle>
+              </DialogHeader>
+              
+              <div className="space-y-6">
+                <div className="flex flex-wrap gap-2">
+                  {selectedArticle.mainTags && selectedArticle.mainTags.map(tag => (
+                    <Badge key={tag} className="bg-red-600 hover:bg-red-700 text-white">
+                      {tag}
+                    </Badge>
+                  ))}
+                  {selectedArticle.subTags && selectedArticle.subTags.map(subTag => (
+                    <Badge key={subTag} variant="outline" className="border-gray-400 text-gray-700">
+                      {subTag}
+                    </Badge>
+                  ))}
+                </div>
+                
+                <div className="prose max-w-none">
+                  <p className="text-gray-700 leading-relaxed text-base">
+                    {selectedArticle.summary}
+                  </p>
+                </div>
+                
+                <div className="flex justify-center pt-4">
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(selectedArticle.link, '_blank');
+                    }}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Read Full Article
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
