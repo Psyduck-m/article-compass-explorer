@@ -195,6 +195,100 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Latest Morning News Section */}
+      <section className="bg-gradient-to-r from-orange-50 to-red-50 py-12 border-b-2 border-orange-200">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-black mb-2">Latest Morning News</h2>
+            <p className="text-gray-600">Major fines, administrative updates, and breaking announcements</p>
+          </div>
+          
+          {/* Featured Morning News Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {filteredArticles
+              .filter(article => 
+                article.mainTags?.some(tag => ['Finance', 'Politics'].includes(tag)) ||
+                article.subTags?.some(tag => ['Policy', 'Government', 'Banking'].includes(tag)) ||
+                article.title?.toLowerCase().includes('fine') ||
+                article.title?.toLowerCase().includes('administrative')
+              )
+              .slice(0, 3)
+              .map(article => (
+                <Card 
+                  key={`morning-${article.id}`}
+                  className="cursor-pointer transition-all duration-500 hover:shadow-2xl border-2 border-orange-300 hover:border-red-500 bg-white relative overflow-hidden group"
+                  onClick={() => handleArticleClick(article)}
+                >
+                  <div className="absolute top-0 left-0 bg-gradient-to-r from-red-600 to-orange-600 text-white px-3 py-1 text-xs font-bold">
+                    BREAKING
+                  </div>
+                  <CardContent className="p-6 pt-10">
+                    <h4 className="text-lg font-bold text-black mb-3 line-clamp-2 group-hover:text-red-700 transition-colors">
+                      {article.title}
+                    </h4>
+                    
+                    <p className="text-gray-700 mb-4 text-sm leading-relaxed line-clamp-2">
+                      {article.shortSummary}
+                    </p>
+                    
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {article.mainTags && article.mainTags.map(tag => (
+                        <Badge key={tag} className="bg-gradient-to-r from-red-600 to-orange-600 text-white text-xs animate-pulse">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-500 font-medium">Morning Brief</span>
+                      <Button
+                        size="sm"
+                        className="bg-red-600 hover:bg-red-700 text-white text-xs"
+                        onClick={(e) => handleExternalLink(article.link, e)}
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+          </div>
+          
+          {/* Morning News Alert Banner */}
+          {filteredArticles.some(article => 
+            article.title?.toLowerCase().includes('fine') || 
+            article.title?.toLowerCase().includes('penalty')
+          ) && (
+            <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-4 rounded-lg shadow-lg animate-pulse">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="bg-white text-red-600 rounded-full p-2 mr-4">
+                    <ExternalLink className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg">Administrative Alert</h3>
+                    <p className="text-red-100">New regulatory fines and penalties announced</p>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  className="border-white text-white hover:bg-white hover:text-red-600"
+                  onClick={() => {
+                    const fineArticle = filteredArticles.find(article => 
+                      article.title?.toLowerCase().includes('fine') || 
+                      article.title?.toLowerCase().includes('penalty')
+                    );
+                    if (fineArticle) handleArticleClick(fineArticle);
+                  }}
+                >
+                  View Details
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Search and Filter Section */}
       <section className="bg-gray-100 py-8">
         <div className="max-w-7xl mx-auto px-4">
