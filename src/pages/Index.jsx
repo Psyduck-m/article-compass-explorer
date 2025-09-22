@@ -248,38 +248,37 @@ const Index = () => {
           </div>
           
           {/* Featured Morning News Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
             {MORNING_NEWS_DATA.slice(0, 3).map(article => (
               <Card 
                 key={`morning-${article.id}`}
-                className="cursor-pointer transition-all duration-500 hover:shadow-2xl border-2 border-orange-300 hover:border-red-500 bg-white relative overflow-hidden group"
+                className="cursor-pointer transition-all duration-300 hover:shadow-lg border border-orange-200 hover:border-red-400 bg-white relative overflow-hidden group h-fit"
                 onClick={() => handleArticleClick(article)}
               >
-                <div className="absolute top-0 left-0 bg-gradient-to-r from-red-600 to-orange-600 text-white px-3 py-1 text-xs font-bold">
-                  BREAKING
+                <div className="absolute top-0 right-0 bg-gradient-to-l from-red-500 to-orange-500 text-white px-2 py-1 text-xs font-semibold rounded-bl-md">
+                  LIVE
                 </div>
-                <CardContent className="p-6 pt-10">
-                  <h4 className="text-lg font-bold text-black mb-3 line-clamp-2 group-hover:text-red-700 transition-colors">
+                <CardContent className="p-4">
+                  <h4 className="text-base font-semibold text-black mb-2 line-clamp-2 group-hover:text-red-600 transition-colors leading-tight">
                     {article.title}
                   </h4>
                   
-                  <p className="text-gray-700 mb-4 text-sm leading-relaxed line-clamp-2">
+                  <p className="text-gray-600 mb-3 text-xs leading-relaxed line-clamp-2">
                     {article.shortSummary}
                   </p>
                   
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {article.mainTags && article.mainTags.map(tag => (
-                      <Badge key={tag} className="bg-gradient-to-r from-red-600 to-orange-600 text-white text-xs animate-pulse">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                  
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500 font-medium">Morning Brief</span>
+                    <div className="flex flex-wrap gap-1">
+                      {article.mainTags && article.mainTags.slice(0, 2).map(tag => (
+                        <Badge key={tag} className="bg-red-500 text-white text-xs px-2 py-0 h-5">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
                     <Button
                       size="sm"
-                      className="bg-red-600 hover:bg-red-700 text-white text-xs"
+                      variant="ghost"
+                      className="h-6 w-6 p-0 hover:bg-red-50 text-red-600"
                       onClick={(e) => handleExternalLink(article.link, e)}
                     >
                       <ExternalLink className="h-3 w-3" />
