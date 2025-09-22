@@ -8,6 +8,50 @@ import { ExternalLink, Search, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 const Index = () => {
+  // Dummy morning news data
+  const MORNING_NEWS_DATA = [
+    {
+      id: "morning-1",
+      title: "SEC Imposes $2.5 Million Fine on Major Investment Firm for Compliance Violations",
+      shortSummary: "The Securities and Exchange Commission announced a significant penalty against a prominent investment firm for failing to maintain proper risk management protocols.",
+      summary: "The Securities and Exchange Commission has imposed a substantial $2.5 million fine on a major investment firm following an extensive investigation into compliance violations. The firm failed to maintain adequate risk management protocols and proper client disclosure procedures over an 18-month period.",
+      mainTags: ["Finance", "Politics"],
+      subTags: ["Policy", "Banking", "Investment"],
+      link: "https://example.com/sec-fine",
+      type: "administrative"
+    },
+    {
+      id: "morning-2", 
+      title: "Federal Reserve Announces New Banking Regulations Effective Immediately",
+      shortSummary: "The Federal Reserve has issued emergency banking regulations affecting all commercial banks, requiring enhanced liquidity reporting by end of month.",
+      summary: "In a surprise announcement this morning, the Federal Reserve has implemented new banking regulations that will significantly impact commercial banking operations. The new rules require enhanced liquidity reporting and stress testing procedures to be implemented within 30 days.",
+      mainTags: ["Finance", "Politics"],
+      subTags: ["Banking", "Policy", "Government"],
+      link: "https://example.com/fed-regulations",
+      type: "regulatory"
+    },
+    {
+      id: "morning-3",
+      title: "Department of Justice Levies Record $4.2 Million Administrative Penalty",
+      shortSummary: "The DOJ has announced its largest administrative fine this year against a corporation for environmental compliance failures.",
+      summary: "The Department of Justice has issued a record-breaking $4.2 million administrative penalty against a major corporation for systematic environmental compliance violations. This represents the largest fine of its kind issued this fiscal year.",
+      mainTags: ["Politics", "Environment"],
+      subTags: ["Policy", "Government"],
+      link: "https://example.com/doj-penalty",
+      type: "penalty"
+    },
+    {
+      id: "morning-4",
+      title: "Treasury Department Issues Emergency Financial Disclosure Requirements",
+      shortSummary: "New emergency disclosure requirements for financial institutions go into effect immediately, affecting quarterly reporting standards.",
+      summary: "The Treasury Department has issued emergency financial disclosure requirements that will affect all major financial institutions. The new standards require enhanced transparency in quarterly reporting and risk assessment procedures.",
+      mainTags: ["Finance"],
+      subTags: ["Policy", "Banking"],
+      link: "https://example.com/treasury-requirements",
+      type: "administrative"
+    }
+  ];
+
   // Predefined main tags and their corresponding subtags
   const PREDEFINED_TAGS = {
     'Technology': ['AI', 'Innovation', 'Medical', 'Software', 'Hardware'],
@@ -205,87 +249,73 @@ const Index = () => {
           
           {/* Featured Morning News Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {filteredArticles
-              .filter(article => 
-                article.mainTags?.some(tag => ['Finance', 'Politics'].includes(tag)) ||
-                article.subTags?.some(tag => ['Policy', 'Government', 'Banking'].includes(tag)) ||
-                article.title?.toLowerCase().includes('fine') ||
-                article.title?.toLowerCase().includes('administrative')
-              )
-              .slice(0, 3)
-              .map(article => (
-                <Card 
-                  key={`morning-${article.id}`}
-                  className="cursor-pointer transition-all duration-500 hover:shadow-2xl border-2 border-orange-300 hover:border-red-500 bg-white relative overflow-hidden group"
-                  onClick={() => handleArticleClick(article)}
-                >
-                  <div className="absolute top-0 left-0 bg-gradient-to-r from-red-600 to-orange-600 text-white px-3 py-1 text-xs font-bold">
-                    BREAKING
+            {MORNING_NEWS_DATA.slice(0, 3).map(article => (
+              <Card 
+                key={`morning-${article.id}`}
+                className="cursor-pointer transition-all duration-500 hover:shadow-2xl border-2 border-orange-300 hover:border-red-500 bg-white relative overflow-hidden group"
+                onClick={() => handleArticleClick(article)}
+              >
+                <div className="absolute top-0 left-0 bg-gradient-to-r from-red-600 to-orange-600 text-white px-3 py-1 text-xs font-bold">
+                  BREAKING
+                </div>
+                <CardContent className="p-6 pt-10">
+                  <h4 className="text-lg font-bold text-black mb-3 line-clamp-2 group-hover:text-red-700 transition-colors">
+                    {article.title}
+                  </h4>
+                  
+                  <p className="text-gray-700 mb-4 text-sm leading-relaxed line-clamp-2">
+                    {article.shortSummary}
+                  </p>
+                  
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {article.mainTags && article.mainTags.map(tag => (
+                      <Badge key={tag} className="bg-gradient-to-r from-red-600 to-orange-600 text-white text-xs animate-pulse">
+                        {tag}
+                      </Badge>
+                    ))}
                   </div>
-                  <CardContent className="p-6 pt-10">
-                    <h4 className="text-lg font-bold text-black mb-3 line-clamp-2 group-hover:text-red-700 transition-colors">
-                      {article.title}
-                    </h4>
-                    
-                    <p className="text-gray-700 mb-4 text-sm leading-relaxed line-clamp-2">
-                      {article.shortSummary}
-                    </p>
-                    
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {article.mainTags && article.mainTags.map(tag => (
-                        <Badge key={tag} className="bg-gradient-to-r from-red-600 to-orange-600 text-white text-xs animate-pulse">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-500 font-medium">Morning Brief</span>
-                      <Button
-                        size="sm"
-                        className="bg-red-600 hover:bg-red-700 text-white text-xs"
-                        onClick={(e) => handleExternalLink(article.link, e)}
-                      >
-                        <ExternalLink className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-500 font-medium">Morning Brief</span>
+                    <Button
+                      size="sm"
+                      className="bg-red-600 hover:bg-red-700 text-white text-xs"
+                      onClick={(e) => handleExternalLink(article.link, e)}
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
           
           {/* Morning News Alert Banner */}
-          {filteredArticles.some(article => 
-            article.title?.toLowerCase().includes('fine') || 
-            article.title?.toLowerCase().includes('penalty')
-          ) && (
-            <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-4 rounded-lg shadow-lg animate-pulse">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="bg-white text-red-600 rounded-full p-2 mr-4">
-                    <ExternalLink className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg">Administrative Alert</h3>
-                    <p className="text-red-100">New regulatory fines and penalties announced</p>
-                  </div>
+          <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-4 rounded-lg shadow-lg animate-pulse">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="bg-white text-red-600 rounded-full p-2 mr-4">
+                  <ExternalLink className="h-4 w-4" />
                 </div>
-                <Button
-                  variant="outline"
-                  className="border-white text-white hover:bg-white hover:text-red-600"
-                  onClick={() => {
-                    const fineArticle = filteredArticles.find(article => 
-                      article.title?.toLowerCase().includes('fine') || 
-                      article.title?.toLowerCase().includes('penalty')
-                    );
-                    if (fineArticle) handleArticleClick(fineArticle);
-                  }}
-                >
-                  View Details
-                </Button>
+                <div>
+                  <h3 className="font-bold text-lg">Administrative Alert</h3>
+                  <p className="text-red-100">New regulatory fines and penalties announced - $6.7M in total penalties issued today</p>
+                </div>
               </div>
+              <Button
+                variant="outline"
+                className="border-white text-white hover:bg-white hover:text-red-600"
+                onClick={() => {
+                  const fineArticle = MORNING_NEWS_DATA.find(article => 
+                    article.type === 'penalty' || article.type === 'administrative'
+                  );
+                  if (fineArticle) handleArticleClick(fineArticle);
+                }}
+              >
+                View Details
+              </Button>
             </div>
-          )}
+          </div>
         </div>
       </section>
 
